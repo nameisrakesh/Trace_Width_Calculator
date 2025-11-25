@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voltage Divider Calculator</title>
 
-    <!-- Load Tailwind CSS -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -19,14 +18,18 @@
                         'primary-accent': '#f97316',
                         'background-light': '#fefefe',
                         'background-main': '#f0f4f8',
-                        'accent': '#f59e0b'
+                        'accent': '#f59e0b',
+                        'primary': '#4f46e5',
+                        'secondary': '#6b7280',
+                        'success': '#10b981',
+                        'bg-light': '#f9fafb'
                     }
                 }
             }
         }
     </script>
 
-    <!-- MathJax Configuration -->
+    <!-- MathJax -->
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         tex2jax: {
@@ -44,7 +47,7 @@
             transition: all 0.3s ease-in-out;
         }
         .card-glow:hover {
-            box-shadow: 0 20px 25px -5px rgba(249,115,22,0.10), 
+            box-shadow: 0 20px 25px -5px rgba(249,115,22,0.10),
                         0 10px 10px -5px rgba(249,115,22,0.05);
             transform: translateY(-2px);
         }
@@ -54,151 +57,543 @@
         }
     </style>
 </head>
+<body class="bg-background-main min-h-screen flex items-start justify-center p-4 sm:p-8 font-sans text-gray-800">
 
-<body class="bg-background-main min-h-screen flex items-start justify-center p-4 sm:p-8 font-sans">
+    <div class="w-full max-w-4xl mt-8 p-4 sm:p-8 rounded-xl space-y-12 bg-background-light card-glow border border-gray-100">
 
-<div class="w-full max-w-4xl mt-8 p-4 sm:p-8 rounded-xl bg-background-light card-glow border border-gray-100 space-y-12">
+        <!-- Navigation (consistent with trace_width) -->
+        <nav class="flex justify-between items-center pb-6 border-b border-gray-200">
+            <a href="index.html" class="text-xl font-bold text-gray-900 tracking-wider">
+                Engineering <span class="text-primary-accent">Tools</span>
+            </a>
 
-    <!-- Navigation (same as trace_width.html) -->
-    <nav class="flex justify-between items-center pb-6 border-b border-gray-200">
-        <a href="index.html" class="text-xl font-bold text-gray-900 tracking-wider">
-            Engineering <span class="text-primary-accent">Tools</span>
-        </a>
-        <div class="flex space-x-4 sm:space-x-8 text-sm font-medium text-gray-600">
-            <a href="index.html" class="nav-link pb-1 border-b-2 border-transparent text-primary-accent border-primary-accent">Dashboard</a>
-            <a href="index.html#tools" class="nav-link pb-1 border-b-2 border-transparent">Tools</a>
-            <a href="https://www.linkedin.com/in/rakesh-bhanavath" target="_blank" class="nav-link pb-1 border-b-2 border-transparent">Resume</a>
-            <a href="mailto:bhanavathrakesh12345@gmail.com" class="nav-link pb-1 border-b-2 border-transparent">Contact</a>
-        </div>
-    </nav>
+            <div class="flex space-x-4 sm:space-x-8 text-sm font-medium text-gray-600">
+                <a href="index.html" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent text-primary-accent border-primary-accent">
+                    Dashboard
+                </a>
+                <a href="index.html#tools" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
+                    Tools
+                </a>
+                <a href="https://www.linkedin.com/in/rakesh-bhanavath" target="_blank" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
+                    Resume
+                </a>
+                <a href="mailto:bhanavathrakesh12345@gmail.com" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
+                    Contact
+                </a>
+            </div>
+        </nav>
 
-    <!-- Header (trace_width style) -->
-    <header class="text-center space-y-2 border-b-2 border-gray-100 pb-8">
-        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
-            Voltage Divider Calculator
-        </h1>
-        <p class="text-lg sm:text-xl text-gray-600 pt-2">
-            Flexible solver + standard resistor pair finder
-        </p>
-    </header>
+        <!-- Header (trace_width style) -->
+        <header class="text-center space-y-2 border-b-2 border-gray-100 pb-8">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+                Voltage Divider Calculator
+            </h1>
+            <p class="text-lg sm:text-xl font-medium text-gray-600 pt-2">
+                Flexible solver + standard resistor pair finder
+            </p>
+        </header>
 
-    <!-- Calculator Section -->
-    <section class="space-y-8">
-        <div class="p-6 md:p-8 bg-white rounded-xl shadow-xl border border-gray-100 space-y-6">
+        <!-- Calculator Section -->
+        <section class="space-y-8">
+            <div class="p-6 md:p-8 bg-white rounded-xl shadow-xl border border-gray-100 space-y-6">
 
-            <!-- Mode Selector -->
-            <div class="flex justify-center bg-gray-100 p-1 rounded-lg shadow-inner">
-                <button id="mode1_btn" onclick="toggleMode(1)"
-                    class="flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition duration-200 bg-primary-accent text-white shadow-md">
-                    Flexible Calculation
-                </button>
-                <button id="mode2_btn" onclick="toggleMode(2)"
-                    class="flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition duration-200 text-gray-700 hover:bg-white">
-                    Resistor Pairs
-                </button>
+                <!-- Mode Selector -->
+                <div class="flex justify-center bg-gray-100 p-1 rounded-lg shadow-inner">
+                    <button id="mode1_btn" onclick="toggleMode(1)"
+                        class="flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition duration-200 bg-primary text-white shadow-md">
+                        Flexible Calculation
+                    </button>
+                    <button id="mode2_btn" onclick="toggleMode(2)"
+                        class="flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition duration-200 text-gray-700 hover:bg-white">
+                        Find Resistor Pairs
+                    </button>
+                </div>
+
+                <!-- MODE 1: Flexible Solver -->
+                <div id="mode1_content" class="space-y-4">
+
+                    <!-- Solve For Selector -->
+                    <div class="flex flex-col">
+                        <label for="solveFor" class="text-sm font-medium text-primary mb-1">
+                            Solve For the Unknown Variable:
+                        </label>
+                        <select id="solveFor" onchange="updateInputFields()"
+                            class="p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150 shadow-sm bg-white">
+                            <option value="vout">Output Voltage (Vout)</option>
+                            <option value="vin">Input Voltage (Vin)</option>
+                            <option value="r1">Top Resistor (R1)</option>
+                            <option value="r2">Bottom Resistor (R2)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Input Voltage (Vin) -->
+                        <div class="flex flex-col">
+                            <label for="vin" class="text-sm font-medium text-secondary mb-1">
+                                Input Voltage ($\boldsymbol{V_{in}}$ in Volts)
+                            </label>
+                            <input type="number" id="vin" value="5.0" min="0.01" step="0.1"
+                                class="p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150 shadow-sm"
+                                placeholder="e.g., 5.0">
+                        </div>
+
+                        <!-- Output Voltage (Vout) -->
+                        <div class="flex flex-col">
+                            <label for="vout" class="text-sm font-medium text-secondary mb-1">
+                                Output Voltage ($\boldsymbol{V_{out}}$ in Volts)
+                            </label>
+                            <input type="number" id="vout" value="2.5" min="0.0" step="0.1"
+                                class="p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150 shadow-sm"
+                                placeholder="e.g., 2.5">
+                        </div>
+
+                        <!-- Resistor 1 (R1) -->
+                        <div class="flex flex-col">
+                            <label for="r1_val" class="text-sm font-medium text-secondary mb-1">
+                                Top Resistor ($\boldsymbol{R_1}$ in Ohms)
+                            </label>
+                            <input type="number" id="r1_val" value="1000" min="0.1" step="10"
+                                class="p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150 shadow-sm"
+                                placeholder="e.g., 1000">
+                        </div>
+
+                        <!-- Resistor 2 (R2) -->
+                        <div class="flex flex-col">
+                            <label for="r2_val" class="text-sm font-medium text-secondary mb-1">
+                                Bottom Resistor ($\boldsymbol{R_2}$ in Ohms)
+                            </label>
+                            <input type="number" id="r2_val" value="1000" min="0.1" step="10"
+                                class="p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150 shadow-sm"
+                                placeholder="e.g., 1000">
+                        </div>
+                    </div>
+
+                    <!-- Calculate Button -->
+                    <button onclick="solveVoltageDivider()"
+                        class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-md hover:bg-indigo-600 transition duration-200 transform hover:scale-[1.01] active:scale-95">
+                        Calculate Result
+                    </button>
+
+                    <!-- Result Display -->
+                    <div id="result1" class="hidden mt-6 p-4 border-2 border-success bg-green-50 rounded-lg text-center">
+                        <div class="text-sm font-medium text-green-700 mb-1" id="calcLabel">
+                            Calculated Value:
+                        </div>
+                        <span id="calcResult" class="text-4xl font-extrabold text-success"></span>
+                        <span id="calcUnit" class="text-xl font-semibold text-green-700"> Volts</span>
+                    </div>
+                </div>
+
+                <!-- MODE 2: Find Resistor Pairs -->
+                <div id="mode2_content" class="hidden space-y-4">
+                    <div class="space-y-4">
+                        <!-- Input Voltage (Vin) -->
+                        <div class="flex flex-col">
+                            <label for="vin2" class="text-sm font-medium text-secondary mb-1">
+                                Input Voltage ($\boldsymbol{V_{in}}$ in Volts)
+                            </label>
+                            <input type="number" id="vin2" value="5.0" min="0.1" step="0.1"
+                                class="p-3 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent transition duration-150 shadow-sm"
+                                placeholder="e.g., 5.0">
+                        </div>
+
+                        <!-- Output Voltage (Vout Target) -->
+                        <div class="flex flex-col">
+                            <label for="vout_target" class="text-sm font-medium text-secondary mb-1">
+                                Target Output Voltage ($\boldsymbol{V_{out}}$ in Volts)
+                            </label>
+                            <input type="number" id="vout_target" value="3.3" min="0.01" step="0.1"
+                                class="p-3 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent transition duration-150 shadow-sm"
+                                placeholder="e.g., 3.3">
+                        </div>
+                    </div>
+
+                    <!-- Calculate Button -->
+                    <button onclick="findResistorValues()"
+                        class="w-full py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:bg-amber-600 transition duration-200 transform hover:scale-[1.01] active:scale-95">
+                        Find Best Standard Pairs
+                    </button>
+
+                    <!-- Results Table for Resistors -->
+                    <div id="result2" class="hidden mt-6">
+                        <h3 class="text-lg font-semibold text-accent mb-2">
+                            Top 30 Resistor Combinations:
+                        </h3>
+                        <div class="overflow-x-auto rounded-lg shadow-md">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-amber-50">
+                                    <tr>
+                                        <th class="px-3 py-2 text-center text-xs font-bold text-gray-700 uppercase whitespace-nowrap">R<sub>1</sub> (&Omega;)</th>
+                                        <th class="px-3 py-2 text-center text-xs font-bold text-gray-700 uppercase whitespace-nowrap">R<sub>2</sub> (&Omega;)</th>
+                                        <th class="px-3 py-2 text-right text-xs font-bold text-gray-700 uppercase whitespace-nowrap">V<sub>out</sub></th>
+                                        <th class="px-3 py-2 text-right text-xs font-bold text-gray-700 uppercase whitespace-nowrap">Error (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resistorTableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                                    <!-- Results populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Message Box (Shared) -->
+                <div id="errorBox" class="hidden p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+                    <p id="errorMessage" class="font-medium"></p>
+                </div>
+
+                <!-- Formula Details (Shared) -->
+                <div class="pt-4 border-t border-gray-200">
+                    <h3 class="text-lg font-semibold text-secondary mb-2">Formula Details</h3>
+                    <p class="text-sm text-gray-600">The voltage divider relationship is:</p>
+                    $$V_{out} = V_{in} \cdot \frac{R_2}{R_1 + R_2}$$
+                    <p class="text-xs text-gray-500 mt-2">
+                        All calculations assume an ideal, no-load scenario.
+                    </p>
+                </div>
+
             </div>
 
-            <!-- Mode 1 Content -->
-            <div id="mode1_content" class="space-y-4">
-                <label class="text-sm font-medium text-gray-700">Solve For</label>
-                <select id="solveFor" onchange="updateInputFields()"
-                    class="w-full p-3 border border-gray-300 rounded-lg shadow-sm">
-                    <option value="vout">Vout</option>
-                    <option value="vin">Vin</option>
-                    <option value="r1">R1</option>
-                    <option value="r2">R2</option>
-                </select>
+            <!-- Footer -->
+            <footer class="pt-8 border-t-2 border-gray-100 text-center">
+                <p class="text-xs text-gray-400">
+                    &copy; Rakesh Bhanavath Engineering Dashboard. Built for efficiency.
+                </p>
+            </footer>
 
-                <!-- Inputs -->
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-sm text-gray-700">Vin (V)</label>
-                        <input id="vin" value="5" type="number" class="w-full p-3 border rounded-lg"/>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-700">Vout (V)</label>
-                        <input id="vout" value="2.5" type="number" class="w-full p-3 border rounded-lg"/>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-700">R1 (Ω)</label>
-                        <input id="r1_val" value="1000" type="number" class="w-full p-3 border rounded-lg"/>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-700">R2 (Ω)</label>
-                        <input id="r2_val" value="1000" type="number" class="w-full p-3 border rounded-lg"/>
-                    </div>
-                </div>
+        </section>
+    </div>
 
-                <!-- Calculate -->
-                <button onclick="solveVoltageDivider()"
-                    class="w-full bg-primary-accent text-white font-bold py-3 rounded-lg shadow-md">
-                    Calculate
-                </button>
-
-                <!-- Result -->
-                <div id="result1" class="hidden p-4 border-2 border-green-500 rounded-lg bg-green-50 text-center">
-                    <p id="calcLabel" class="text-green-700 text-sm">Result:</p>
-                    <span id="calcResult" class="text-4xl font-bold text-green-700"></span>
-                    <span id="calcUnit" class="text-xl text-green-700"></span>
-                </div>
-            </div>
-
-            <!-- Mode 2 Content -->
-            <div id="mode2_content" class="hidden space-y-4">
-                <div>
-                    <label class="text-sm text-gray-700">Vin (V)</label>
-                    <input id="vin2" value="5" type="number" class="w-full p-3 border rounded-lg"/>
-                </div>
-
-                <div>
-                    <label class="text-sm text-gray-700">Target Vout (V)</label>
-                    <input id="vout_target" value="3.3" type="number" class="w-full p-3 border rounded-lg"/>
-                </div>
-
-                <button onclick="findResistorValues()"
-                    class="w-full bg-accent text-white py-3 rounded-lg shadow-md">
-                    Find Standard Pairs
-                </button>
-
-                <div id="result2" class="hidden">
-                    <h3 class="text-lg font-semibold text-accent mb-2">Top 30 Matches</h3>
-
-                    <div class="overflow-x-auto rounded-lg shadow">
-                        <table class="min-w-full divide-y divide-gray-300 text-sm">
-                            <thead class="bg-amber-50">
-                                <tr>
-                                    <th class="px-3 py-2 text-center">R1 (Ω)</th>
-                                    <th class="px-3 py-2 text-center">R2 (Ω)</th>
-                                    <th class="px-3 py-2 text-right">Vout</th>
-                                    <th class="px-3 py-2 text-right">Error (%)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="resistorTableBody" class="divide-y divide-gray-200"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="errorBox" class="hidden p-3 text-red-700 bg-red-100 border border-red-400 rounded-lg"></div>
-        </div>
-
-        <!-- Formula Section -->
-        <div class="p-6 bg-gray-50 rounded-xl border text-sm text-gray-600">
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Formula</h3>
-            $$V_{out} = V_{in} \cdot \frac{R_2}{R_1 + R_2}$$
-        </div>
-
-    </section>
-
-    <footer class="pt-8 border-t text-center text-xs text-gray-400">
-        © Engineering Tool Suite.
-    </footer>
-
-</div>
-
-<!-- JS CODE (unchanged from original) -->
 <script>
-/* Entire JavaScript remains exactly the same as your original */
+        // Standard E96 values (1% tolerance) used as base for all decades
+        const E96_BASE = [
+            100, 102, 105, 107, 110, 113, 115, 118, 121, 124, 127, 130, 133, 137, 140, 143, 147, 150, 154, 158, 162, 165, 169, 174, 178, 182, 187, 191, 196, 200, 205, 210, 215, 221, 226, 232, 237, 243, 249, 255, 261, 267, 274, 280, 287, 294, 301, 309, 316, 324, 332, 340, 348, 357, 365, 374, 383, 392, 402, 412, 422, 432, 442, 453, 464, 475, 487, 499, 511, 523, 536, 549, 562, 576, 590, 604, 619, 634, 649, 665, 681, 698, 715, 732, 750, 768, 787, 806, 825, 845, 866, 887, 909, 931, 953, 976
+        ];
+        
+        let ALL_STANDARD_RESISTORS = [];
+
+        /**
+         * Generates the full list of standard E96 resistors from 10 Ohm up to 20 MOhm.
+         */
+        function getStandardResistors() {
+            if (ALL_STANDARD_RESISTORS.length > 0) return ALL_STANDARD_RESISTORS;
+
+            const decades = [0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000]; // Up to 10MOhm for R1 + R2
+            const max_resistance = 20000000; // 20 MΩ
+            const min_resistance = 0.1; // 0.1 Ω (as per input min value)
+
+            const resistors = new Set();
+            for (const baseValue of E96_BASE) {
+                for (const decade of decades) {
+                    let value = baseValue * decade / 100;
+                    // Round to avoid float issues from multiplication/division with base 100
+                    value = Math.round(value * 1000) / 1000; 
+                    
+                    if (value <= max_resistance && value >= min_resistance) { 
+                         resistors.add(value);
+                    }
+                }
+            }
+            ALL_STANDARD_RESISTORS = Array.from(resistors).sort((a, b) => a - b);
+            return ALL_STANDARD_RESISTORS;
+        }
+
+        // New map for Mode 1 elements (Flexible Solver)
+        const mode1Elements = {
+            solveFor: document.getElementById('solveFor'),
+            vin: document.getElementById('vin'),
+            vout: document.getElementById('vout'),
+            r1: document.getElementById('r1_val'),
+            r2: document.getElementById('r2_val'),
+            result: document.getElementById('result1'),
+            calcResult: document.getElementById('calcResult'),
+            calcUnit: document.getElementById('calcUnit'),
+            calcLabel: document.getElementById('calcLabel'), // Added ID in HTML
+            errorBox: document.getElementById('errorBox'),
+            errorMessage: document.getElementById('errorMessage'),
+        };
+
+        /**
+         * Toggles the calculator between Flexible Solver and Resistor finding mode.
+         */
+        function toggleMode(mode) {
+            const mode1Content = document.getElementById('mode1_content');
+            const mode2Content = document.getElementById('mode2_content');
+            const mode1Btn = document.getElementById('mode1_btn');
+            const mode2Btn = document.getElementById('mode2_btn');
+            const result1 = document.getElementById('result1');
+            const result2 = document.getElementById('result2');
+            const errorBox = document.getElementById('errorBox');
+
+            // Hide all results and errors first
+            result1.classList.add('hidden');
+            result2.classList.add('hidden');
+            errorBox.classList.add('hidden');
+
+            if (mode === 1) {
+                mode1Content.classList.remove('hidden');
+                mode2Content.classList.add('hidden');
+                mode1Btn.classList.add('bg-primary', 'text-white', 'shadow-md');
+                mode1Btn.classList.remove('text-gray-700', 'hover:bg-white');
+                mode2Btn.classList.remove('bg-accent', 'text-white', 'shadow-md');
+                mode2Btn.classList.add('text-gray-700', 'hover:bg-white');
+                updateInputFields(); // Initialize input states for the new flexible mode
+            } else {
+                mode1Content.classList.add('hidden');
+                mode2Content.classList.remove('hidden');
+                mode2Btn.classList.add('bg-accent', 'text-white', 'shadow-md');
+                mode2Btn.classList.remove('text-gray-700', 'hover:bg-white');
+                mode1Btn.classList.remove('bg-primary', 'text-white', 'shadow-md');
+                mode1Btn.classList.add('text-gray-700', 'hover:bg-white');
+            }
+        }
+        
+        /**
+         * Enables/disables input fields based on the selected "Solve For" variable (Mode 1).
+         */
+        function updateInputFields() {
+            const solveFor = mode1Elements.solveFor.value;
+            mode1Elements.result.classList.add('hidden'); // Hide result on mode change
+            mode1Elements.errorBox.classList.add('hidden');
+
+            // List of all inputs to manage
+            const allInputs = [mode1Elements.vin, mode1Elements.vout, mode1Elements.r1, mode1Elements.r2];
+
+            allInputs.forEach(input => {
+                // Enable all inputs initially
+                input.disabled = false;
+                input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                input.style.borderColor = ''; // Clear custom styles if any
+                if (input.dataset.originalValue) {
+                    input.value = input.dataset.originalValue; // Restore original value
+                    delete input.dataset.originalValue;
+                }
+            });
+
+            // Disable the field being solved for and apply styling
+            const targetInput = mode1Elements[solveFor];
+            if (targetInput) {
+                targetInput.dataset.originalValue = targetInput.value; // Store original value before disabling
+                targetInput.disabled = true;
+                targetInput.value = '--- Calculated ---'; 
+                targetInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+                targetInput.style.borderColor = '#4f46e5'; // Primary color border
+            }
+        }
+
+        /**
+         * Main function to solve the voltage divider equation for the selected variable (Mode 1).
+         */
+        function solveVoltageDivider() {
+            const solveFor = mode1Elements.solveFor.value;
+            
+            // Get values from the inputs that are not disabled
+            const Vin = parseFloat(mode1Elements.vin.value);
+            const Vout = parseFloat(mode1Elements.vout.value);
+            const R1 = parseFloat(mode1Elements.r1.value);
+            const R2 = parseFloat(mode1Elements.r2.value);
+            
+            // Hide previous results/errors
+            mode1Elements.result.classList.add('hidden');
+            mode1Elements.errorBox.classList.add('hidden');
+            
+            let resultValue, resultUnit;
+
+            // 1. Set the dynamic label
+            const solveForMap = {
+                'vout': 'Calculated Vout:',
+                'vin': 'Calculated Vin:',
+                'r1': 'Calculated R1:',
+                'r2': 'Calculated R2:'
+            };
+            mode1Elements.calcLabel.textContent = solveForMap[solveFor]; // Set the label
+            
+            // Input validation: Check for all required, non-calculated fields
+            const requiredInputs = { vin: Vin, vout: Vout, r1: R1, r2: R2 };
+            
+            for (const key in requiredInputs) {
+                 if (key !== solveFor && (isNaN(requiredInputs[key]) || requiredInputs[key] < 0)) {
+                    mode1Elements.errorMessage.textContent = `Please enter a valid, non-negative numerical value for input: ${key.toUpperCase()}.`;
+                    mode1Elements.errorBox.classList.remove('hidden');
+                    return;
+                }
+            }
+
+
+            try {
+                switch (solveFor) {
+                    case 'vout':
+                        // Vout = Vin * [R2 / (R1 + R2)]
+                        if (R1 + R2 === 0) throw new Error("R1 and R2 cannot both be zero.");
+                        resultValue = Vin * (R2 / (R1 + R2));
+                        break;
+
+                    case 'vin':
+                        // Vin = Vout * [(R1 + R2) / R2]
+                        if (R2 === 0) throw new Error("R2 cannot be zero when solving for Vin.");
+                        if (Vout <= 0) throw new Error("Vout must be positive when solving for Vin.");
+                        resultValue = Vout * ((R1 + R2) / R2);
+                        break;
+                        
+                    case 'r1':
+                        // R1 = R2 * [(Vin - Vout) / Vout]
+                        if (Vout === 0) throw new Error("Vout cannot be zero when solving for R1.");
+                        if (Vin <= Vout) throw new Error("Vin must be greater than Vout to find a positive R1.");
+                        resultValue = R2 * ((Vin - Vout) / Vout);
+                        break;
+
+                    case 'r2':
+                        // R2 = R1 * [Vout / (Vin - Vout)]
+                        if (Vin === Vout) throw new Error("Vin cannot be equal to Vout when solving for R2.");
+                        if (Vin <= Vout) throw new Error("Vin must be greater than Vout to find a positive R2.");
+                        resultValue = R1 * (Vout / (Vin - Vout));
+                        break;
+
+                    default:
+                        throw new Error("Invalid calculation mode selected.");
+                }
+
+                if (isNaN(resultValue) || !isFinite(resultValue) || resultValue < 0) {
+                     throw new Error("Calculation error. Check inputs for division by zero or negative results.");
+                }
+
+                // 2. Format and Display Result based on the solved variable
+                if (solveFor === 'r1' || solveFor === 'r2') {
+                    resultUnit = 'Ohms';
+                    // Handle resistance formatting (k Ohms or M Ohms)
+                    if (resultValue >= 1000000) {
+                        mode1Elements.calcResult.textContent = (resultValue / 1000000).toFixed(3);
+                        mode1Elements.calcUnit.textContent = 'M Ohms'; // M for Mega
+                    } else if (resultValue >= 1000) {
+                        mode1Elements.calcResult.textContent = (resultValue / 1000).toFixed(3);
+                        mode1Elements.calcUnit.textContent = 'k Ohms'; // k for Kilo
+                    } else {
+                        mode1Elements.calcResult.textContent = resultValue.toFixed(3);
+                        mode1Elements.calcUnit.textContent = 'Ohms';
+                    }
+                } else {
+                    resultUnit = 'Volts';
+                    // Handle voltage formatting
+                    mode1Elements.calcResult.textContent = resultValue.toFixed(4); 
+                    mode1Elements.calcUnit.textContent = resultUnit; // 'Volts'
+                }
+
+                mode1Elements.result.classList.remove('hidden');
+
+            } catch (e) {
+                mode1Elements.errorMessage.textContent = e.message;
+                mode1Elements.errorBox.classList.remove('hidden');
+            }
+        }
+        
+        /**
+         * Finds the best standard resistor pairs for a target Vout (Mode 2).
+         */
+        function findResistorValues() {
+            const Vin = parseFloat(document.getElementById('vin2').value);
+            const VoutTarget = parseFloat(document.getElementById('vout_target').value);
+
+            const resultElement = document.getElementById('result2');
+            const errorBox = document.getElementById('errorBox');
+            const errorMessageElement = document.getElementById('errorMessage');
+            const tableBody = document.getElementById('resistorTableBody');
+
+            // Hide previous results/errors
+            resultElement.classList.add('hidden');
+            errorBox.classList.add('hidden');
+            tableBody.innerHTML = '';
+
+            // Input validation
+            if (isNaN(Vin) || isNaN(VoutTarget) || Vin <= 0 || VoutTarget <= 0) {
+                errorMessageElement.textContent = "Please enter valid, positive numerical values for Input and Target Voltage.";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            if (VoutTarget >= Vin) {
+                errorMessageElement.textContent = "Target Vout must be less than Input Vin.";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            // Calculate the desired voltage ratio (transfer function)
+            const targetRatio = VoutTarget / Vin;
+            
+            // Generate standard resistor list
+            const standardResistors = getStandardResistors();
+            const combinations = [];
+            
+            // Loop through all pairs (R1 and R2)
+            for (const r1 of standardResistors) {
+                for (const r2 of standardResistors) {
+                    const actualRatio = r2 / (r1 + r2);
+                    const error = Math.abs(actualRatio - targetRatio) / targetRatio * 100;
+                    const VoutActual = Vin * actualRatio;
+
+                    combinations.push({
+                        r1: r1,
+                        r2: r2,
+                        Vout: VoutActual,
+                        error: error
+                    });
+                }
+            }
+
+            // Sort by error ascending and take the top 30 combinations
+            combinations.sort((a, b) => a.error - b.error);
+            const topCombinations = combinations.slice(0, 30); // Use top 30
+            
+            // Populate the table
+            if (topCombinations.length > 0) {
+                topCombinations.forEach(combo => {
+                    const row = tableBody.insertRow();
+                    row.className = 'hover:bg-amber-50'; // Highlight on hover
+                    
+                    // R1 - Centered
+                    let cell1 = row.insertCell();
+                    cell1.className = 'px-3 py-2 whitespace-nowrap text-center text-gray-900 font-mono';
+                    cell1.textContent = formatResistance(combo.r1);
+                    
+                    // R2 - Centered
+                    let cell2 = row.insertCell();
+                    cell2.className = 'px-3 py-2 whitespace-nowrap text-center text-gray-900 font-mono';
+                    cell2.textContent = formatResistance(combo.r2);
+                    
+                    // Vout - Right aligned
+                    let cell3 = row.insertCell();
+                    cell3.className = 'px-3 py-2 whitespace-nowrap text-right font-semibold text-green-700';
+                    cell3.textContent = combo.Vout.toFixed(4);
+                    
+                    // Error - Right aligned
+                    let cell4 = row.insertCell();
+                    cell4.className = `px-3 py-2 whitespace-nowrap text-right font-medium ${combo.error <= 1 ? 'text-blue-600' : 'text-orange-500'}`;
+                    cell4.textContent = combo.error.toFixed(3);
+                });
+                
+                resultElement.classList.remove('hidden');
+            } else {
+                 errorMessageElement.textContent = "No valid resistor combinations found in the range.";
+                errorBox.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Converts resistance value to kΩ or MΩ for cleaner display (used for Mode 2 table).
+         */
+        function formatResistance(ohms) {
+            if (ohms >= 1000000) {
+                return (ohms / 1000000).toFixed(2) + " M";
+            } else if (ohms >= 1000) {
+                return (ohms / 1000).toFixed(2) + " k";
+            }
+            return ohms.toFixed(2);
+        }
+
+        // Initialize to mode 1 on load
+        window.onload = () => {
+            getStandardResistors(); // Pre-generate standard resistors
+            toggleMode(1);
+        };
 </script>
 
 </body>
