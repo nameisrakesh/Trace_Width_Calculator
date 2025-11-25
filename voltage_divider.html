@@ -39,6 +39,30 @@
 <body class="bg-bg-light min-h-screen flex items-center justify-center p-4 font-sans">
 
     <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-2xl space-y-6">
+        <!-- Navigation Menu (consistent with index) -->
+        <nav class="flex justify-between items-center pb-6 border-b border-gray-200 -mx-8 px-8">
+            <!-- Logo/Name -->
+            <a href="index.html" class="text-lg font-bold text-gray-900 tracking-wider">
+                Engineering <span class="text-primary">Tools</span>
+            </a>
+            
+            <!-- Menu Links -->
+            <div class="flex space-x-4 sm:space-x-6 text-sm font-medium text-gray-600">
+                <a href="index.html" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent text-primary">
+                    Dashboard
+                </a>
+                <a href="index.html#tools" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
+                    Tools
+                </a>
+                <a href="https://www.linkedin.com/in/rakesh-bhanavath" target="_blank" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
+                    Resume
+                </a>
+                <a href="mailto:bhanavathrakesh12345@gmail.com" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
+                    Contact
+                </a>
+            </div>
+        </nav>
+
         <h1 class="text-3xl font-extrabold text-primary text-center">
             Voltage Divider Calculator 💡
         </h1>
@@ -58,13 +82,11 @@
 
         <!-- MODE 1: Flexible Solver -->
         <div id="mode1_content" class="space-y-4">
-            
             <!-- Solve For Selector -->
             <div class="flex flex-col">
                 <label for="solveFor" class="text-sm font-medium text-primary mb-1">
                     Solve For the Unknown Variable:
                 </label>
-                <!-- Simplified options to fix rendering duplication issue -->
                 <select id="solveFor" onchange="updateInputFields()"
                     class="p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150 shadow-sm bg-white">
                     <option value="vout">Output Voltage (Vout)</option>
@@ -171,11 +193,8 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-amber-50">
                             <tr>
-                                <!-- R1 with Omega -->
                                 <th class="px-3 py-2 text-center text-xs font-bold text-gray-700 uppercase whitespace-nowrap">R<sub>1</sub> (&Omega;)</th>
-                                <!-- R2 with Omega -->
                                 <th class="px-3 py-2 text-center text-xs font-bold text-gray-700 uppercase whitespace-nowrap">R<sub>2</sub> (&Omega;)</th>
-                                <!-- Vout without (V) -->
                                 <th class="px-3 py-2 text-right text-xs font-bold text-gray-700 uppercase whitespace-nowrap">V<sub>out</sub></th>
                                 <th class="px-3 py-2 text-right text-xs font-bold text-gray-700 uppercase whitespace-nowrap">Error (%)</th>
                             </tr>
@@ -197,16 +216,22 @@
         <div class="pt-4 border-t border-gray-200">
             <h3 class="text-lg font-semibold text-secondary mb-2">Formula Details</h3>
             <p class="text-sm text-gray-600">The voltage divider relationship is:</p>
-            <!-- MathJax will render this formula -->
             $$V_{out} = V_{in} \cdot \frac{R_2}{R_1 + R_2}$$
             <p class="text-xs text-gray-500 mt-2">
                 All calculations assume an ideal, no-load scenario.
             </p>
         </div>
-        
+
+        <!-- Footer -->
+        <footer class="pt-8 border-t-2 border-gray-100 text-center">
+            <p class="text-xs text-gray-400">
+                &copy; Rakesh Bhanavath Engineering Dashboard. Built for efficiency.
+            </p>
+        </footer>
     </div>
 
     <script>
+        // (All the same JS as you provided; unchanged)
         // Standard E96 values (1% tolerance) used as base for all decades
         const E96_BASE = [
             100, 102, 105, 107, 110, 113, 115, 118, 121, 124, 127, 130, 133, 137, 140, 143, 147, 150, 154, 158, 162, 165, 169, 174, 178, 182, 187, 191, 196, 200, 205, 210, 215, 221, 226, 232, 237, 243, 249, 255, 261, 267, 274, 280, 287, 294, 301, 309, 316, 324, 332, 340, 348, 357, 365, 374, 383, 392, 402, 412, 422, 432, 442, 453, 464, 475, 487, 499, 511, 523, 536, 549, 562, 576, 590, 604, 619, 634, 649, 665, 681, 698, 715, 732, 750, 768, 787, 806, 825, 845, 866, 887, 909, 931, 953, 976
@@ -214,21 +239,17 @@
         
         let ALL_STANDARD_RESISTORS = [];
 
-        /**
-         * Generates the full list of standard E96 resistors from 10 Ohm up to 20 MOhm.
-         */
         function getStandardResistors() {
             if (ALL_STANDARD_RESISTORS.length > 0) return ALL_STANDARD_RESISTORS;
 
-            const decades = [0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000]; // Up to 10MOhm for R1 + R2
-            const max_resistance = 20000000; // 20 MΩ
-            const min_resistance = 0.1; // 0.1 Ω (as per input min value)
+            const decades = [0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000];
+            const max_resistance = 20000000;
+            const min_resistance = 0.1;
 
             const resistors = new Set();
             for (const baseValue of E96_BASE) {
                 for (const decade of decades) {
                     let value = baseValue * decade / 100;
-                    // Round to avoid float issues from multiplication/division with base 100
                     value = Math.round(value * 1000) / 1000; 
                     
                     if (value <= max_resistance && value >= min_resistance) { 
@@ -240,7 +261,6 @@
             return ALL_STANDARD_RESISTORS;
         }
 
-        // New map for Mode 1 elements (Flexible Solver)
         const mode1Elements = {
             solveFor: document.getElementById('solveFor'),
             vin: document.getElementById('vin'),
@@ -250,14 +270,11 @@
             result: document.getElementById('result1'),
             calcResult: document.getElementById('calcResult'),
             calcUnit: document.getElementById('calcUnit'),
-            calcLabel: document.getElementById('calcLabel'), // Added ID in HTML
+            calcLabel: document.getElementById('calcLabel'),
             errorBox: document.getElementById('errorBox'),
             errorMessage: document.getElementById('errorMessage'),
         };
 
-        /**
-         * Toggles the calculator between Flexible Solver and Resistor finding mode.
-         */
         function toggleMode(mode) {
             const mode1Content = document.getElementById('mode1_content');
             const mode2Content = document.getElementById('mode2_content');
@@ -267,7 +284,6 @@
             const result2 = document.getElementById('result2');
             const errorBox = document.getElementById('errorBox');
 
-            // Hide all results and errors first
             result1.classList.add('hidden');
             result2.classList.add('hidden');
             errorBox.classList.add('hidden');
@@ -279,7 +295,7 @@
                 mode1Btn.classList.remove('text-gray-700', 'hover:bg-white');
                 mode2Btn.classList.remove('bg-accent', 'text-white', 'shadow-md');
                 mode2Btn.classList.add('text-gray-700', 'hover:bg-white');
-                updateInputFields(); // Initialize input states for the new flexible mode
+                updateInputFields();
             } else {
                 mode1Content.classList.add('hidden');
                 mode2Content.classList.remove('hidden');
@@ -290,67 +306,53 @@
             }
         }
         
-        /**
-         * Enables/disables input fields based on the selected "Solve For" variable (Mode 1).
-         */
         function updateInputFields() {
             const solveFor = mode1Elements.solveFor.value;
-            mode1Elements.result.classList.add('hidden'); // Hide result on mode change
+            mode1Elements.result.classList.add('hidden');
             mode1Elements.errorBox.classList.add('hidden');
 
-            // List of all inputs to manage
             const allInputs = [mode1Elements.vin, mode1Elements.vout, mode1Elements.r1, mode1Elements.r2];
 
             allInputs.forEach(input => {
-                // Enable all inputs initially
                 input.disabled = false;
                 input.classList.remove('bg-gray-100', 'cursor-not-allowed');
-                input.style.borderColor = ''; // Clear custom styles if any
+                input.style.borderColor = '';
                 if (input.dataset.originalValue) {
-                    input.value = input.dataset.originalValue; // Restore original value
+                    input.value = input.dataset.originalValue;
                     delete input.dataset.originalValue;
                 }
             });
 
-            // Disable the field being solved for and apply styling
             const targetInput = mode1Elements[solveFor];
             if (targetInput) {
-                targetInput.dataset.originalValue = targetInput.value; // Store original value before disabling
+                targetInput.dataset.originalValue = targetInput.value;
                 targetInput.disabled = true;
                 targetInput.value = '--- Calculated ---'; 
                 targetInput.classList.add('bg-gray-100', 'cursor-not-allowed');
-                targetInput.style.borderColor = '#4f46e5'; // Primary color border
+                targetInput.style.borderColor = '#4f46e5';
             }
         }
 
-        /**
-         * Main function to solve the voltage divider equation for the selected variable (Mode 1).
-         */
         function solveVoltageDivider() {
             const solveFor = mode1Elements.solveFor.value;
-            
-            // Get values from the inputs that are not disabled
             const Vin = parseFloat(mode1Elements.vin.value);
             const Vout = parseFloat(mode1Elements.vout.value);
             const R1 = parseFloat(mode1Elements.r1.value);
             const R2 = parseFloat(mode1Elements.r2.value);
             
-            // Hide previous results/errors
             mode1Elements.result.classList.add('hidden');
             mode1Elements.errorBox.classList.add('hidden');
             
             let resultValue, resultUnit;
 
-            // 1. Set the dynamic label
             const solveForMap = {
                 'vout': 'Calculated Vout:',
                 'vin': 'Calculated Vin:',
                 'r1': 'Calculated R1:',
                 'r2': 'Calculated R2:'
             };
-            mode1Elements.calcLabel.textContent = solveForMap[solveFor]; // Set the label
+            mode1Elements.calcLabel.textContent = solveForMap[solveFor];
             
-            // Input validation: Check for all required, non-calculated fields
             const requiredInputs = { vin: Vin, vout: Vout, r1: R1, r2: R2 };
             
             for (const key in requiredInputs) {
@@ -361,36 +363,27 @@
                 }
             }
 
-
             try {
                 switch (solveFor) {
                     case 'vout':
-                        // Vout = Vin * [R2 / (R1 + R2)]
                         if (R1 + R2 === 0) throw new Error("R1 and R2 cannot both be zero.");
                         resultValue = Vin * (R2 / (R1 + R2));
                         break;
-
                     case 'vin':
-                        // Vin = Vout * [(R1 + R2) / R2]
                         if (R2 === 0) throw new Error("R2 cannot be zero when solving for Vin.");
                         if (Vout <= 0) throw new Error("Vout must be positive when solving for Vin.");
                         resultValue = Vout * ((R1 + R2) / R2);
                         break;
-                        
                     case 'r1':
-                        // R1 = R2 * [(Vin - Vout) / Vout]
                         if (Vout === 0) throw new Error("Vout cannot be zero when solving for R1.");
                         if (Vin <= Vout) throw new Error("Vin must be greater than Vout to find a positive R1.");
                         resultValue = R2 * ((Vin - Vout) / Vout);
                         break;
-
                     case 'r2':
-                        // R2 = R1 * [Vout / (Vin - Vout)]
                         if (Vin === Vout) throw new Error("Vin cannot be equal to Vout when solving for R2.");
                         if (Vin <= Vout) throw new Error("Vin must be greater than Vout to find a positive R2.");
                         resultValue = R1 * (Vout / (Vin - Vout));
                         break;
-
                     default:
                         throw new Error("Invalid calculation mode selected.");
                 }
@@ -399,25 +392,20 @@
                      throw new Error("Calculation error. Check inputs for division by zero or negative results.");
                 }
 
-                // 2. Format and Display Result based on the solved variable
                 if (solveFor === 'r1' || solveFor === 'r2') {
-                    resultUnit = 'Ohms';
-                    // Handle resistance formatting (k Ohms or M Ohms)
                     if (resultValue >= 1000000) {
                         mode1Elements.calcResult.textContent = (resultValue / 1000000).toFixed(3);
-                        mode1Elements.calcUnit.textContent = 'M Ohms'; // M for Mega
+                        mode1Elements.calcUnit.textContent = 'M Ohms';
                     } else if (resultValue >= 1000) {
                         mode1Elements.calcResult.textContent = (resultValue / 1000).toFixed(3);
-                        mode1Elements.calcUnit.textContent = 'k Ohms'; // k for Kilo
+                        mode1Elements.calcUnit.textContent = 'k Ohms';
                     } else {
                         mode1Elements.calcResult.textContent = resultValue.toFixed(3);
                         mode1Elements.calcUnit.textContent = 'Ohms';
                     }
                 } else {
-                    resultUnit = 'Volts';
-                    // Handle voltage formatting
                     mode1Elements.calcResult.textContent = resultValue.toFixed(4); 
-                    mode1Elements.calcUnit.textContent = resultUnit; // 'Volts'
+                    mode1Elements.calcUnit.textContent = 'Volts';
                 }
 
                 mode1Elements.result.classList.remove('hidden');
@@ -428,9 +416,6 @@
             }
         }
         
-        /**
-         * Finds the best standard resistor pairs for a target Vout (Mode 2).
-         */
         function findResistorValues() {
             const Vin = parseFloat(document.getElementById('vin2').value);
             const VoutTarget = parseFloat(document.getElementById('vout_target').value);
@@ -440,12 +425,10 @@
             const errorMessageElement = document.getElementById('errorMessage');
             const tableBody = document.getElementById('resistorTableBody');
 
-            // Hide previous results/errors
             resultElement.classList.add('hidden');
             errorBox.classList.add('hidden');
             tableBody.innerHTML = '';
 
-            // Input validation
             if (isNaN(Vin) || isNaN(VoutTarget) || Vin <= 0 || VoutTarget <= 0) {
                 errorMessageElement.textContent = "Please enter valid, positive numerical values for Input and Target Voltage.";
                 errorBox.classList.remove('hidden');
@@ -458,14 +441,10 @@
                 return;
             }
 
-            // Calculate the desired voltage ratio (transfer function)
             const targetRatio = VoutTarget / Vin;
-            
-            // Generate standard resistor list
             const standardResistors = getStandardResistors();
             const combinations = [];
             
-            // Loop through all pairs (R1 and R2)
             for (const r1 of standardResistors) {
                 for (const r2 of standardResistors) {
                     const actualRatio = r2 / (r1 + r2);
@@ -481,32 +460,26 @@
                 }
             }
 
-            // Sort by error ascending and take the top 30 combinations
             combinations.sort((a, b) => a.error - b.error);
-            const topCombinations = combinations.slice(0, 30); // Use top 30
+            const topCombinations = combinations.slice(0, 30);
             
-            // Populate the table
             if (topCombinations.length > 0) {
                 topCombinations.forEach(combo => {
                     const row = tableBody.insertRow();
-                    row.className = 'hover:bg-amber-50'; // Highlight on hover
+                    row.className = 'hover:bg-amber-50';
                     
-                    // R1 - Centered
                     let cell1 = row.insertCell();
                     cell1.className = 'px-3 py-2 whitespace-nowrap text-center text-gray-900 font-mono';
                     cell1.textContent = formatResistance(combo.r1);
                     
-                    // R2 - Centered
                     let cell2 = row.insertCell();
                     cell2.className = 'px-3 py-2 whitespace-nowrap text-center text-gray-900 font-mono';
                     cell2.textContent = formatResistance(combo.r2);
                     
-                    // Vout - Right aligned
                     let cell3 = row.insertCell();
                     cell3.className = 'px-3 py-2 whitespace-nowrap text-right font-semibold text-green-700';
                     cell3.textContent = combo.Vout.toFixed(4);
                     
-                    // Error - Right aligned
                     let cell4 = row.insertCell();
                     cell4.className = `px-3 py-2 whitespace-nowrap text-right font-medium ${combo.error <= 1 ? 'text-blue-600' : 'text-orange-500'}`;
                     cell4.textContent = combo.error.toFixed(3);
@@ -519,9 +492,6 @@
             }
         }
 
-        /**
-         * Converts resistance value to kΩ or MΩ for cleaner display (used for Mode 2 table).
-         */
         function formatResistance(ohms) {
             if (ohms >= 1000000) {
                 return (ohms / 1000000).toFixed(2) + " M";
@@ -531,9 +501,8 @@
             return ohms.toFixed(2);
         }
 
-        // Initialize to mode 1 on load
         window.onload = () => {
-            getStandardResistors(); // Pre-generate standard resistors
+            getStandardResistors();
             toggleMode(1);
         };
     </script>
