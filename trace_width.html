@@ -55,7 +55,6 @@
             border-bottom: 2px solid #f97316;
         }
         
-        /* Specific styling for the MathJax result output, ensuring proper alignment and non-wrapping */
         #result .result-label {
             white-space: nowrap; 
             display: inline-block; 
@@ -84,20 +83,20 @@
 
     <div class="w-full max-w-4xl mt-8 p-4 sm:p-8 rounded-xl space-y-12 bg-background-light card-glow border border-gray-100">
         
-        <!-- Navigation Menu -->
+        <!-- Navigation Menu (identical behavior to index) -->
         <nav class="flex justify-between items-center pb-6 border-b border-gray-200">
             <!-- Logo/Name -->
-            <a href="#" class="text-xl font-bold text-gray-900 tracking-wider">
+            <a href="index.html" class="text-xl font-bold text-gray-900 tracking-wider">
                 Engineering <span class="text-primary-accent">Tools</span>
             </a>
             
             <!-- Menu Links -->
             <div class="flex space-x-4 sm:space-x-8 text-sm font-medium text-gray-600">
-                <a href="#" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent text-primary-accent border-primary-accent">
+                <a href="index.html" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent text-primary-accent border-primary-accent">
                     Dashboard
                 </a>
-                <a href="#calculator" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
-                    Calculator
+                <a href="index.html#tools" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
+                    Tools
                 </a>
                 <a href="https://www.linkedin.com/in/rakesh-bhanavath" target="_blank" class="nav-link transition duration-200 pb-1 border-b-2 border-transparent">
                     Resume
@@ -210,31 +209,24 @@
 <script>
     /**
      * Calculates the minimum required PCB trace width based on the standard IPC-2221 High Current formula.
-     * The formula is: I = k * (ΔT)^0.44 * A^0.725, which is solved for A and then for w.
      */
     function calculateTraceWidth() {
-        // Step 1: Get inputs from the form elements
         const I = parseFloat(document.getElementById('current').value);
         const deltaT = parseFloat(document.getElementById('tempRise').value);
         const t = parseFloat(document.getElementById('thickness').value);
-        // Get the 'k' constant based on the selected layer type (External or Internal)
         const k = parseFloat(document.querySelector('input[name="layerType"]:checked').value);
         
-        // Constants defined by the IPC-2221 formula and unit conversion
-        const exp_dt = 0.44;                // Exponent for Temperature Rise
-        const exp_area_inv = 1 / 0.725;     // Exponent to solve for Area (approx 1.3793)
-        const conversionFactor = 1.378;     // mils per oz (constant for imperial units)
-        const conversion_mil_to_mm = 0.0254; // 1 mil = 0.0254 mm
+        const exp_dt = 0.44;
+        const exp_area_inv = 1 / 0.725;
+        const conversionFactor = 1.378;
+        const conversion_mil_to_mm = 0.0254;
 
         const resultElement = document.getElementById('result');
         const widthResultElement = document.getElementById('widthResult');
 
-        // Reset styling and hide result initially
         resultElement.style.display = 'none';
         
-        // Input validation: Ensure required fields are positive numbers
         if (isNaN(I) || isNaN(deltaT) || I <= 0 || deltaT <= 0 || t <= 0) {
-            // Apply error styling using Tailwind classes defined in config
             resultElement.style.borderColor = '#dc3545';
             resultElement.classList.remove('bg-success-bg', 'text-success-text');
             resultElement.classList.add('bg-error-bg', 'text-error-text');
@@ -243,9 +235,7 @@
             return;
         }
 
-        // --- Step 2: Calculate Cross-sectional Area (A in sq mils) ---
         try {
-            // Calculate k * (ΔT)^0.44
             const temp_rise_power = Math.pow(deltaT, exp_dt);
             const denominator = k * temp_rise_power;
             
@@ -253,14 +243,8 @@
                 throw new Error("Temperature rise is too low or constant k is zero.");
             }
             
-            // Calculate the ratio [I / (k * (ΔT)^0.44)]
             const ratio = I / denominator;
-            
-            // Calculate Area (A) in sq mils
             const A = Math.pow(ratio, exp_area_inv);
-
-            // --- Step 3: Calculate Trace Width (w in mils) ---
-            // Formula: w = A / (t * 1.378)
             const width_denominator = t * conversionFactor;
             
             if (width_denominator === 0) {
@@ -268,31 +252,27 @@
             }
             
             const width_mils = A / width_denominator;
-            const width_mm = width_mils * conversion_mil_to_mm; // Calculate mm value
+            const width_mm = width_mils * conversion_mil_to_mm;
 
-            // Display Success Result in both mils and mm
             widthResultElement.innerHTML = `
                 <div class="mils-value">${width_mils.toFixed(3)} mils</div>
                 <div class="mm-value">(${width_mm.toFixed(3)} mm)</div>
             `;
             
-            // Apply success styling
             resultElement.classList.remove('bg-error-bg', 'text-error-text');
             resultElement.classList.add('bg-success-bg', 'text-success-text');
-            resultElement.style.borderColor = '#34d399'; // Green 400
+            resultElement.style.borderColor = '#34d399';
             resultElement.style.display = 'block';
 
         } catch (error) {
-            // Handle any calculation errors gracefully
             resultElement.classList.remove('bg-success-bg', 'text-error-text');
             resultElement.classList.add('bg-error-bg', 'text-error-text');
-            resultElement.style.borderColor = '#f87171'; // Red 400
+            resultElement.style.borderColor = '#f87171';
             widthResultElement.innerHTML = `Calculation Error: ${error.message}`;
             resultElement.style.display = 'block';
         }
     }
     
-    // Run calculation once on load with default values for immediate feedback
     document.addEventListener('DOMContentLoaded', calculateTraceWidth);
 </script>
 
